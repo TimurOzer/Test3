@@ -1,37 +1,62 @@
 import socket
+import hashlib
+import os
+import sys
+import time
+import subprocess
 
-def send_message_to_server(host='127.0.0.1', port=12345):  # Use '127.0.0.1' for localhost
+def get_current_hash():
+    with open(__file__, 'rb') as f:
+        return hashlib.sha256(f.read()).hexdigest()
+
+def update_client(new_data):
+    with open(__file__, 'wb') as f:
+        f.write(new_data)
+    print("Update completed! Restarting the client...")
+    # Restart the client using subprocess
+    subprocess.Popen([sys.executable, __file__])
+    sys.exit(0)  # Close the current instance
+
+def start_client(host='127.0.0.1', port=12345):
     try:
-        # Create a socket object
-        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        print("Client socket created.")
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((host, port))
         
-        # Connect to the server
-        print(f"Attempting to connect to server at {host}:{port}...")
-        client_socket.connect((host, port))
-        print(f"Connected to server at {host}:{port}.")
+        current_hash = get_current_hash()
+        s.send(f'HASH {current_hash}'.encode())
         
-        while True:
-            # Get input from the user
-            message = input("Enter your message (or type 'exit' to quit): ")
-            if message.lower() == 'exit':
-                # If the user types 'exit', close the connection
-                print("Closing the connection...")
-                break
-            
-            # Send the message to the server
-            client_socket.send(message.encode('utf-8'))
-            
-            # Receive a response from the server
-            response = client_socket.recv(1024).decode('utf-8')
-            print(f"Response from server: {response}")
-    
+        response = s.recv(1024)
+        if response.startswith(b'UPDATE_AVAILABLE'):
+            print("A new update is available!")
+            user_input = input("Do you want to update? (yes/no): ").strip().lower()
+            if user_input == 'yes':
+                data = response[len(b'UPDATE_AVAILABLE'):]
+                while True:
+                    chunk = s.recv(4096)
+                    if not chunk:
+                        break
+                    data += chunk
+                update_client(data)
+                return
+            else:
+                print("Update declined. Your version is not up to date.")
+                print("The application will close in 5 seconds...")
+                time.sleep(5)
+                sys.exit(0)
+        
+        elif response == b'UP_TO_DATE':
+            print("Client is up to date!")
+            while True:
+                message = input("Enter your message (or type 'exit' to quit): ")
+                if message.lower() == 'exit':
+                    break
+                s.send(message.encode())
+                print(s.recv(1024).decode())
+        
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"Error: {e}")
     finally:
-        # Close the connection
-        client_socket.close()
-        print("Client socket closed.")
+        s.close()
 
 if __name__ == "__main__":
-    send_message_to_server()
+    start_client()
