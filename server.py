@@ -2,6 +2,7 @@ import socket
 import threading
 import os
 import hashlib
+import genesis_block  # Import the genesis_block module
 
 connected_clients = 0
 connected_clients_lock = threading.Lock()
@@ -58,6 +59,10 @@ def handle_client(client_socket, client_address):
             print(f"{client_address} disconnected. Total connected clients: {connected_clients}")
 
 def start_server(host='0.0.0.0', port=12345):
+    # Create the genesis block if it doesn't exist
+    if not os.path.exists('data/genesis_block.json'):
+        genesis_block.create_genesis_block()
+
     if not os.path.exists('client.py'):
         print("ERROR: client.py not found!")
         return
