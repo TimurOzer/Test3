@@ -2,13 +2,10 @@ import os
 import json
 from datetime import datetime
 
-def create_beta_block(prev_security_hash, prev_alpha_hash):
-    # Define the beta block structure
-    beta_block = {
-        "Prev_Security_Hash": prev_security_hash,  # Previous Security Hash
+def create_alpha_block(prev_alpha_hash):
+    # Define the alpha block structure
+    alpha_block = {
         "Prev_Alpha_Hash": prev_alpha_hash,  # Previous Alpha Hash
-        "Signer": "",  # Signer of the block
-        "Approve": "",  # Approval status
         "Tag": "",  # Tag for the block
         "Timestamp": datetime.utcnow().isoformat(),  # Current timestamp
         "Sender": "",  # Sender of the block
@@ -19,10 +16,8 @@ def create_beta_block(prev_security_hash, prev_alpha_hash):
         "Metadata": {},  # Metadata
         "Smart Contract": "",  # Smart contract
         "Fee": "",  # Fee
-        "Prize": "",  # Prize
         "Status": "",  # Status
         "Network": "",  # Network
-        "Security Hash": "",  # Security Hash (will be calculated later)
         "Alpha Hash": ""  # Alpha Hash (will be calculated later)
     }
 
@@ -30,21 +25,21 @@ def create_beta_block(prev_security_hash, prev_alpha_hash):
     if not os.path.exists('data'):
         os.makedirs('data')
 
-    # Find the next available beta block file name
+    # Find the next available alpha block file name
     block_index = 1
-    while os.path.exists(f'data/beta{block_index}.json'):
+    while os.path.exists(f'data/alpha{block_index}.json'):
         block_index += 1
 
     # Set the block index
-    beta_block["Block Index"] = block_index
+    alpha_block["Block Index"] = block_index
 
-    # Save the beta block to a JSON file
-    file_name = f'data/beta{block_index}.json'
+    # Save the alpha block to a JSON file
+    file_name = f'data/alpha{block_index}.json'
     with open(file_name, 'w') as f:
-        json.dump(beta_block, f, indent=4)
+        json.dump(alpha_block, f, indent=4)
 
-    print(f"Beta block {block_index} created and saved to '{file_name}'.")
+    print(f"Alpha block {block_index} created and saved to '{file_name}'.")
 
 if __name__ == "__main__":
-    # For testing, pass empty previous Security and Alpha Hashes
-    create_beta_block("", "")
+    # For testing, pass an empty previous Alpha Hash
+    create_alpha_block("")
