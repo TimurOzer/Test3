@@ -18,6 +18,7 @@ def create_alpha_block(prev_alpha_hash):
         "Fee": "",  # Fee
         "Status": "",  # Status
         "Network": "",  # Network
+        "Priority": "",  # Priority
         "Alpha Hash": ""  # Alpha Hash (will be calculated later)
     }
 

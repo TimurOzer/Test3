@@ -19,6 +19,7 @@ def create_security_block(prev_security_hash):
         "Prize": "",  # Prize
         "Status": "",  # Status
         "Network": "",  # Network
+        "Priority": "",  # Priority
         "Security Hash": ""  # Security Hash (will be calculated later)
     }
 

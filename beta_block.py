@@ -22,6 +22,7 @@ def create_beta_block(prev_security_hash, prev_alpha_hash):
         "Prize": "",  # Prize
         "Status": "",  # Status
         "Network": "",  # Network
+        "Priority": "",  # Priority
         "Security Hash": "",  # Security Hash (will be calculated later)
         "Alpha Hash": ""  # Alpha Hash (will be calculated later)
     }

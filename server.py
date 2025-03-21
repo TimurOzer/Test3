@@ -63,9 +63,9 @@ def start_server(host='0.0.0.0', port=12345):
     if not os.path.exists('data/genesis_block.json'):
         genesis_block.create_genesis_block()
 
-    if not os.path.exists('client.py'):
-        print("ERROR: client.py not found!")
-        return
+    #if not os.path.exists('client.py'):
+    #    print("ERROR: client.py not found!")
+    #    return
 
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((host, port))
