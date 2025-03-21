@@ -17,6 +17,71 @@ def update_client(new_data):
     subprocess.Popen([sys.executable, __file__])
     sys.exit(0)  # Close the current instance
 
+def send_message(s):
+    while True:
+        message = input("Enter your message (or type 'exit' to quit): ")
+        if message.lower() == 'exit':
+            break
+        s.send(message.encode())
+        print(s.recv(1024).decode())
+
+def show_menu(s):
+    while True:
+        print("\n--- MENU ---")
+        print("1. Create Wallet")
+        print("2. Change Password")
+        print("3. Balance")
+        print("4. Transfer")
+        print("5. Airdrop")
+        print("6. Miner")
+        print("7. Validator")
+        print("8. Network")
+        print("9. Delete Wallet")
+        print("10. Version")
+        print("11. Send Message")
+        print("12. Exit")
+        
+        choice = input("Select an option: ").strip()
+        
+        if choice == "1":
+            print("Create Wallet selected.")
+            # Create Wallet logic here
+        elif choice == "2":
+            print("Change Password selected.")
+            # Change Password logic here
+        elif choice == "3":
+            print("Balance selected.")
+            # Balance logic here
+        elif choice == "4":
+            print("Transfer selected.")
+            # Transfer logic here
+        elif choice == "5":
+            print("Airdrop selected.")
+            # Airdrop logic here
+        elif choice == "6":
+            print("Miner selected.")
+            # Miner logic here
+        elif choice == "7":
+            print("Validator selected.")
+            # Validator logic here
+        elif choice == "8":
+            print("Network selected.")
+            # Network logic here
+        elif choice == "9":
+            print("Delete Wallet selected.")
+            # Delete Wallet logic here
+        elif choice == "10":
+            print("Version selected.")
+            # Version logic here
+        elif choice == "11":
+            print("Send Message selected.")
+            send_message(s)
+        elif choice == "12":
+            print("Exiting...")
+            break
+        else:
+            print("Invalid option. Please try again.")
+
 def start_client(host='0.0.0.0', port=12345):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -46,12 +111,7 @@ def start_client(host='0.0.0.0', port=12345):
         
         elif response == b'UP_TO_DATE':
             print("Client is up to date!")
-            while True:
-                message = input("Enter your message (or type 'exit' to quit): ")
-                if message.lower() == 'exit':
-                    break
-                s.send(message.encode())
-                print(s.recv(1024).decode())
+            show_menu(s)
         
     except Exception as e:
         print(f"Error: {e}")
