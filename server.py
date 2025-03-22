@@ -77,13 +77,13 @@ def handle_client(client_socket, client_address):
                         "priority": "low",
                         "sequence": 5  # Low priority starts at 5
                     }
-                    # Save airdrop data to pool folder
-                    if not os.path.exists('pool'):
-                        os.makedirs('pool')
-                    airdrop_file = f"pool/airdrop_{wallet_address}.json"
+                    # Save airdrop data to pool/validator folder
+                    if not os.path.exists('pool/validator'):
+                        os.makedirs('pool/validator')
+                    airdrop_file = f"pool/validator/airdrop_{wallet_address}.json"
                     with open(airdrop_file, 'w') as f:
                         json.dump(airdrop_data, f, indent=4)
-                    client_socket.send(f"Airdrop request for {wallet_address} added to pool.".encode())
+                    client_socket.send(f"Airdrop request for {wallet_address} added to pool/validator.".encode())
                 # Handle delete wallet
                 elif data.startswith("DELETE_WALLET"):
                     wallet_address = data.split(' ')[1]
