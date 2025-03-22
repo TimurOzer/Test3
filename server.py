@@ -3,6 +3,8 @@ import threading
 import os
 import hashlib
 import genesis_block  # Import the genesis_block module
+import wallet
+import json
 
 connected_clients = 0
 connected_clients_lock = threading.Lock()
@@ -47,6 +49,16 @@ def handle_client(client_socket, client_address):
                 data = client_socket.recv(1024).decode()
                 if not data or data.lower() == 'exit':
                     break
+                # Add this block to handle wallet creation
+                if data == "CREATE_WALLET":
+                    print(f"{client_address} requested wallet creation")
+                    # Create a wallet using wallet.py
+                    new_wallet = wallet.create_wallet()
+                    # Send wallet data back to client
+                    client_socket.send(json.dumps(new_wallet).encode())
+                else:
+                    print(f"{client_address}: {data}")
+                    client_socket.send("Message received!".encode())
                 print(f"{client_address}: {data}")
                 client_socket.send("Message received!".encode())
 

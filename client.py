@@ -4,6 +4,7 @@ import os
 import sys
 import time
 import subprocess
+import json
 
 def get_current_hash():
     with open(__file__, 'rb') as f:
@@ -45,7 +46,23 @@ def show_menu(s):
         
         if choice == "1":
             print("Create Wallet selected.")
-            # Create Wallet logic here
+            # Send wallet creation request to server
+            s.send("CREATE_WALLET".encode())
+            
+            # Receive wallet data from server
+            response = s.recv(4096).decode()
+            
+            try:
+                wallet_data = json.loads(response)
+                # Save wallet data to wallet.json in the current directory
+                with open('wallet.json', 'w') as f:
+                    json.dump(wallet_data, f, indent=4)
+                print(f"Wallet created successfully!")
+                print(f"Address: {wallet_data['address']}")
+                print(f"Private Key: {wallet_data['private_key']}")
+                print(f"Wallet data saved to wallet.json")
+            except json.JSONDecodeError:
+                print("Error: Invalid wallet data received from server")
         elif choice == "2":
             print("Change Password selected.")
             # Change Password logic here
