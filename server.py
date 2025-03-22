@@ -56,6 +56,13 @@ def handle_client(client_socket, client_address):
                     new_wallet = wallet.create_wallet()
                     # Send wallet data back to client
                     client_socket.send(json.dumps(new_wallet).encode())
+                elif data.startswith("DELETE_WALLET"):
+                    wallet_address = data.split(' ')[1]
+                    if os.path.exists(f'wallets/{wallet_address}.json'):
+                        os.remove(f'wallets/{wallet_address}.json')
+                        client_socket.send(f"Wallet {wallet_address} deleted successfully.".encode())
+                    else:
+                        client_socket.send(f"Wallet {wallet_address} not found.".encode())
                 else:
                     print(f"{client_address}: {data}")
                     client_socket.send("Message received!".encode())

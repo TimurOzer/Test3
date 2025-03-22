@@ -26,6 +26,22 @@ def send_message(s):
         s.send(message.encode())
         print(s.recv(1024).decode())
 
+def delete_wallet(s):
+    if os.path.exists('wallet.json'):
+        with open('wallet.json', 'r') as f:
+            wallet_data = json.load(f)
+            wallet_address = wallet_data.get('address')
+        
+        os.remove('wallet.json')
+        print("Wallet deleted locally.")
+        
+        # Send delete request to server
+        s.send(f"DELETE_WALLET {wallet_address}".encode())
+        response = s.recv(1024).decode()
+        print(response)
+    else:
+        print("No wallet found to delete.")
+
 def show_menu(s):
     while True:
         print("\n--- MENU ---")
@@ -86,6 +102,7 @@ def show_menu(s):
             # Network logic here
         elif choice == "9":
             print("Delete Wallet selected.")
+            delete_wallet(s)
             # Delete Wallet logic here
         elif choice == "10":
             print("Version selected.")
