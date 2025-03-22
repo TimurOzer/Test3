@@ -126,7 +126,17 @@ def show_menu(s):
             # Change Password logic here
         elif choice == "3":
             print("Balance selected.")
-            # Balance logic here
+            if os.path.exists('wallet.json'):
+                with open('wallet.json', 'r') as f:
+                    wallet_data = json.load(f)
+                wallet_address = wallet_data.get('address')
+                # Send balance request to server
+                s.send(f"BALANCE {wallet_address}".encode())
+                # Receive balance from server
+                response = s.recv(1024).decode()
+                print(f"Your balance: {response} Baklava")
+            else:
+                print("No wallet found. Please create a wallet first.")
         elif choice == "4":
             print("Transfer selected.")
             # Transfer logic here
@@ -157,7 +167,7 @@ def show_menu(s):
         else:
             print("Invalid option. Please try again.")
 
-def start_client(host='192.168.1.106', port=12345):
+def start_client(host='0.0.0.0', port=12345):
     try:
         # Create or load user credentials
         create_user_credentials()
@@ -203,4 +213,4 @@ def start_client(host='192.168.1.106', port=12345):
         s.close()
 
 if __name__ == "__main__":
-    start_client(host='192.168.1.106', port=12345)
+    start_client(host='164.92.247.14', port=12345)

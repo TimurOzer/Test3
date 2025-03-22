@@ -49,13 +49,26 @@ def handle_client(client_socket, client_address):
                 data = client_socket.recv(1024).decode()
                 if not data or data.lower() == 'exit':
                     break
-                # Add this block to handle wallet creation
+                # Handle wallet creation
                 if data == "CREATE_WALLET":
                     print(f"{client_address} requested wallet creation")
                     # Create a wallet using wallet.py
                     new_wallet = wallet.create_wallet()
                     # Send wallet data back to client
                     client_socket.send(json.dumps(new_wallet).encode())
+                # Handle balance request
+                elif data.startswith("BALANCE"):
+                    wallet_address = data.split(' ')[1]
+                    wallet_file = f"wallets/{wallet_address}.json"
+                    if os.path.exists(wallet_file):
+                        with open(wallet_file, 'r') as f:
+                            wallet_data = json.load(f)
+                        # Get Baklava balance from tokens
+                        baklava_balance = wallet_data.get('tokens', {}).get('Baklava', 0)
+                        client_socket.send(str(baklava_balance).encode())
+                    else:
+                        client_socket.send("0".encode())  # Wallet not found, balance is 0
+                # Handle delete wallet
                 elif data.startswith("DELETE_WALLET"):
                     wallet_address = data.split(' ')[1]
                     if os.path.exists(f'wallets/{wallet_address}.json'):
@@ -66,8 +79,6 @@ def handle_client(client_socket, client_address):
                 else:
                     print(f"{client_address}: {data}")
                     client_socket.send("Message received!".encode())
-                print(f"{client_address}: {data}")
-                client_socket.send("Message received!".encode())
 
     except Exception as e:
         print(f"Error: {e}")
@@ -77,7 +88,7 @@ def handle_client(client_socket, client_address):
             connected_clients -= 1
             print(f"{client_address} disconnected. Total connected clients: {connected_clients}")
 
-def start_server(host='192.168.1.106', port=12345):
+def start_server(host='0.0.0.0', port=12345):
     # Create the genesis block if it doesn't exist
     if not os.path.exists('data/genesis_block.json'):
         genesis_block.create_genesis_block()
