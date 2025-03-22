@@ -42,6 +42,48 @@ def delete_wallet(s):
     else:
         print("No wallet found to delete.")
 
+def load_wallet():
+    if os.path.exists('wallet.json'):
+        with open('wallet.json', 'r') as f:
+            wallet_data = json.load(f)
+        print("Existing wallet loaded successfully!")
+        print(f"Address: {wallet_data['address']}")
+        return wallet_data
+    else:
+        print("No existing wallet found.")
+        return None
+
+def create_user_credentials():
+    if not os.path.exists('user_credentials.json'):
+        username = input("Create a username: ").strip()
+        password = input("Create a password: ").strip()
+        credentials = {
+            'username': username,
+            'password': hashlib.sha256(password.encode()).hexdigest()  # Hash the password
+        }
+        with open('user_credentials.json', 'w') as f:
+            json.dump(credentials, f, indent=4)
+        print("User credentials created successfully!")
+    else:
+        print("User credentials already exist. Loading...")
+
+def authenticate_user():
+    if os.path.exists('user_credentials.json'):
+        with open('user_credentials.json', 'r') as f:
+            credentials = json.load(f)
+        username = input("Enter your username: ").strip()
+        password = input("Enter your password: ").strip()
+        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+        if username == credentials['username'] and hashed_password == credentials['password']:
+            print("Authentication successful!")
+            return True
+        else:
+            print("Invalid username or password.")
+            return False
+    else:
+        print("No user credentials found. Please create a new user.")
+        return False
+
 def show_menu(s):
     while True:
         print("\n--- MENU ---")
@@ -103,7 +145,6 @@ def show_menu(s):
         elif choice == "9":
             print("Delete Wallet selected.")
             delete_wallet(s)
-            # Delete Wallet logic here
         elif choice == "10":
             print("Version selected.")
             # Version logic here
@@ -116,8 +157,17 @@ def show_menu(s):
         else:
             print("Invalid option. Please try again.")
 
-def start_client(host='0.0.0.0', port=12345):
+def start_client(host='192.168.1.106', port=12345):
     try:
+        # Create or load user credentials
+        create_user_credentials()
+        if not authenticate_user():
+            print("Authentication failed. Exiting...")
+            return
+
+        # Load existing wallet if it exists
+        wallet_data = load_wallet()
+
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((host, port))
         
@@ -153,4 +203,4 @@ def start_client(host='0.0.0.0', port=12345):
         s.close()
 
 if __name__ == "__main__":
-    start_client(host='164.92.247.14', port=12345)
+    start_client(host='192.168.1.106', port=12345)

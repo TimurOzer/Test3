@@ -77,7 +77,7 @@ def handle_client(client_socket, client_address):
             connected_clients -= 1
             print(f"{client_address} disconnected. Total connected clients: {connected_clients}")
 
-def start_server(host='0.0.0.0', port=12345):
+def start_server(host='192.168.1.106', port=12345):
     # Create the genesis block if it doesn't exist
     if not os.path.exists('data/genesis_block.json'):
         genesis_block.create_genesis_block()
