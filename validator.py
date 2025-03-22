@@ -57,6 +57,7 @@ def connect_as_validator(host='192.168.1.106', port=12346):
                     "Network": NETWORK,
                     "Validator": VALIDATOR_NAME,
                     "Security Hash": calculate_security_hash(file_data)  # Güvenlik hash'i
+
                 }
 
                 # Save the processed data to completed_transactions folder

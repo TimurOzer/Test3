@@ -8,7 +8,7 @@ from datetime import datetime
 
 # Global variables
 validators = []
-miners = 0
+miners = []
 connected_clients_lock = threading.Lock()
 
 def handle_client(client_socket, client_address):
@@ -26,8 +26,8 @@ def handle_client(client_socket, client_address):
         if role == 'validator':
             validators.append(client_socket)  # Add validator socket to the list
         elif role == 'miner':
-            miners += 1
-        print(f"Total validators: {len(validators)}, Total miners: {miners}")
+            miners.append(client_socket)  # Add miner socket to the list
+        print(f"Total validators: {len(validators)}, Total miners: {len(miners)}")
 
     try:
         while True:
@@ -67,21 +67,71 @@ def handle_client(client_socket, client_address):
             if role == 'validator':
                 validators.remove(client_socket)  # Remove validator socket from the list
             elif role == 'miner':
-                miners -= 1
+                miners.remove(client_socket)  # Remove miner socket from the list
             print(f"Client {client_address} ({role}) disconnected.")
-            print(f"Total validators: {len(validators)}, Total miners: {miners}")
+            print(f"Total validators: {len(validators)}, Total miners: {len(miners)}")
 
-def process_pool():
+def process_miner_pool():
+    while True:
+        try:
+            # Check the pool/miner directory for files
+            if os.path.exists('pool/miner'):
+                miner_files = os.listdir('pool/miner')
+                if miner_files:  # Eğer dosya varsa
+                    miner_files.sort()  # Sort files by name (sequence number)
+
+                    # Process the first file in the sorted list
+                    file_name = miner_files[0]
+                    file_path = os.path.join('pool/miner', file_name)
+
+                    # Check if the file exists and is readable
+                    if os.path.isfile(file_path) and os.access(file_path, os.R_OK):
+                        with open(file_path, 'r') as f:
+                            file_data = json.load(f)
+
+                        print(f"Processing miner file: {file_name}")
+
+                        # Send to a random miner
+                        if miners:
+                            # Choose a random miner
+                            miner_socket = random.choice(miners)
+                            miner_socket.send(json.dumps(file_data).encode('utf-8'))
+                            print(f"Sent {file_name} to a miner.")
+                        else:
+                            print("No miners available. Retrying later...")
+
+                        # Remove the processed file
+                        try:
+                            os.remove(file_path)
+                            print(f"Removed {file_name} from the pool/miner.")
+                        except PermissionError:
+                            print(f"Permission denied: Unable to remove {file_name}.")
+                        except Exception as e:
+                            print(f"Error removing {file_name}: {e}")
+                    else:
+                        print(f"File {file_name} is not accessible. Skipping.")
+                else:
+                    print("No files in the pool/miner. Waiting...")
+            else:
+                print("pool/miner directory does not exist. Creating...")
+                os.makedirs('pool/miner')
+
+            # Wait before checking the pool again
+            time.sleep(5)
+        except Exception as e:
+            print(f"Error processing miner pool: {e}")
+
+def process_validator_pool():
     while True:
         try:
             # Check the pool/validator directory for files
             if os.path.exists('pool/validator'):
-                pool_files = os.listdir('pool/validator')
-                pool_files.sort()  # Sort files by name (sequence number)
+                validator_files = os.listdir('pool/validator')
+                if validator_files:  # Eğer dosya varsa
+                    validator_files.sort()  # Sort files by name (sequence number)
 
-                if pool_files:
                     # Process the first file in the sorted list
-                    file_name = pool_files[0]
+                    file_name = validator_files[0]
                     file_path = os.path.join('pool/validator', file_name)
 
                     # Check if the file exists and is readable
@@ -92,7 +142,7 @@ def process_pool():
                         priority = file_data.get('priority', 'low')
                         sequence = file_data.get('sequence', 5)
 
-                        print(f"Processing file: {file_name}, Priority: {priority}, Sequence: {sequence}")
+                        print(f"Processing validator file: {file_name}, Priority: {priority}, Sequence: {sequence}")
 
                         # If priority is low and sequence is 5, send to a random validator
                         if priority == 'low' and sequence == 5:
@@ -125,7 +175,18 @@ def process_pool():
             # Wait before checking the pool again
             time.sleep(5)
         except Exception as e:
-            print(f"Error processing pool: {e}")
+            print(f"Error processing validator pool: {e}")
+
+def process_pool():
+    # Start separate threads for miner and validator pools
+    miner_thread = threading.Thread(target=process_miner_pool, daemon=True)
+    validator_thread = threading.Thread(target=process_validator_pool, daemon=True)
+
+    miner_thread.start()
+    validator_thread.start()
+
+    miner_thread.join()
+    validator_thread.join()
 
 def start_pool_server(host='0.0.0.0', port=12346):
     # Create the 'pool' directory and subdirectories if they don't exist

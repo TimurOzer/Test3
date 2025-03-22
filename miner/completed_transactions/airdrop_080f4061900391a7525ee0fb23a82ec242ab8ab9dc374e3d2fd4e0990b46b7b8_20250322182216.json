@@ -1,0 +1,21 @@
+{
+    "Tag": "Airdrop",
+    "Priority": "low",
+    "Timestamp": "2025-03-22T18:22:11.081869",
+    "Sender": "080f4061900391a7525ee0fb23a82ec242ab8ab9dc374e3d2fd4e0990b46b7b8",
+    "Receiver": "System",
+    "Chain Version": "0.0.0.1",
+    "Signature": "1c448354f40b55897bbe4be1b306af323aec0acf77de1cbe76de7e24ba46abf1",
+    "Block Index": 1,
+    "Freud Detection": 0,
+    "Smart Contract": "None",
+    "Prize": 0,
+    "Status": "Completed",
+    "Network": "Ceviznet",
+    "Validator": "Validator_01",
+    "Security Hash": "1c448354f40b55897bbe4be1b306af323aec0acf77de1cbe76de7e24ba46abf1",
+    "Alpha Signature": "047faa09287d7602ce431537b614cbf085688083b3277a72d19a70c08f305c0d",
+    "Metadata": {},
+    "Fee": 0,
+    "Alpha Hash": "b43fe5224e6822022c9d4bbc16083bcb4e45fcdbdf40997978c00513d544abc0"
+}
