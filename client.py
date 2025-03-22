@@ -84,6 +84,34 @@ def authenticate_user():
         print("No user credentials found. Please create a new user.")
         return False
 
+def change_password():
+    if not os.path.exists('user_credentials.json'):
+        print("No user credentials found. Please create a user first.")
+        return
+
+    with open('user_credentials.json', 'r') as f:
+        credentials = json.load(f)
+
+    current_password = input("Enter your current password: ").strip()
+    hashed_current_password = hashlib.sha256(current_password.encode()).hexdigest()
+
+    if hashed_current_password != credentials['password']:
+        print("Incorrect current password.")
+        return
+
+    new_password = input("Enter your new password: ").strip()
+    confirm_new_password = input("Confirm your new password: ").strip()
+
+    if new_password != confirm_new_password:
+        print("New passwords do not match.")
+        return
+
+    # Update the password
+    credentials['password'] = hashlib.sha256(new_password.encode()).hexdigest()
+    with open('user_credentials.json', 'w') as f:
+        json.dump(credentials, f, indent=4)
+    print("Password changed successfully!")
+
 def show_menu(s):
     while True:
         print("\n--- MENU ---")
@@ -123,7 +151,7 @@ def show_menu(s):
                 print("Error: Invalid wallet data received from server")
         elif choice == "2":
             print("Change Password selected.")
-            # Change Password logic here
+            change_password()
         elif choice == "3":
             print("Balance selected.")
             if os.path.exists('wallet.json'):
@@ -213,4 +241,4 @@ def start_client(host='0.0.0.0', port=12345):
         s.close()
 
 if __name__ == "__main__":
-    start_client(host='164.92.247.14', port=12345)
+    start_client(host='192.168.1.106', port=12345)
