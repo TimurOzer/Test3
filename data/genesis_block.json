@@ -1,0 +1,19 @@
+{
+    "Tag": "Genesis",
+    "Timestamp": "2025-03-22T13:39:56.574457",
+    "Sender": "Server",
+    "Receiver": "Baklava BlockChain",
+    "Chain Version": "0.0.0.1",
+    "Signature": "",
+    "Block Index": 0,
+    "Metadata": {},
+    "Smart Contract": "",
+    "Status": "Active",
+    "Network": "CevizNet",
+    "Baklava Address": "bklvdc38569a110702c2fed1164021f0539df178",
+    "Baklava MaxSupply": 100000000,
+    "Baklava Mining Reserve": 80000000,
+    "Baklava Airdrop Reserve": 20000000,
+    "Alpha Hash": "621f3691456484ed428c61fa5da7fcbaf2e993e40cb8b0b13f9fc8cdbb587d6e",
+    "Security Hash": "846ce51789c2160cfde59dff5272854972c5a63837578fa5074c1d8bb633a557"
+}

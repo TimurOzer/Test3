@@ -6,6 +6,9 @@ import time
 import subprocess
 import json
 
+# Versiyon bilgisi (manuel olarak güncellenir)
+VERSION = "0.0.0.1"
+
 def get_current_hash():
     with open(__file__, 'rb') as f:
         return hashlib.sha256(f.read()).hexdigest()
@@ -111,6 +114,20 @@ def change_password():
     with open('user_credentials.json', 'w') as f:
         json.dump(credentials, f, indent=4)
     print("Password changed successfully!")
+    
+def request_airdrop(s):
+    if not os.path.exists('wallet.json'):
+        print("No wallet found. Please create a wallet first.")
+        return
+
+    with open('wallet.json', 'r') as f:
+        wallet_data = json.load(f)
+    wallet_address = wallet_data.get('address')
+
+    # Send airdrop request to server
+    s.send(f"AIRDROP {wallet_address}".encode())
+    response = s.recv(1024).decode()
+    print(response)
 
 def show_menu(s):
     while True:
@@ -170,7 +187,7 @@ def show_menu(s):
             # Transfer logic here
         elif choice == "5":
             print("Airdrop selected.")
-            # Airdrop logic here
+            request_airdrop(s)
         elif choice == "6":
             print("Miner selected.")
             # Miner logic here
@@ -185,7 +202,7 @@ def show_menu(s):
             delete_wallet(s)
         elif choice == "10":
             print("Version selected.")
-            # Version logic here
+            print(f"Current version: {VERSION}")
         elif choice == "11":
             print("Send Message selected.")
             send_message(s)

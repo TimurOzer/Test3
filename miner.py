@@ -1,6 +1,6 @@
 import socket
 
-def connect_as_miner(host='127.0.0.1', port=12346):
+def connect_as_miner(host='192.168.1.106', port=12346):
     try:
         # Create a socket object
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
